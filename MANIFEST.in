@@ -1,0 +1,20 @@
+# Include documentation and license
+include README.md
+include LICENSE
+include CHANGELOG.md
+
+# Include static viewer files
+recursive-include epi_viewer_static *.html *.js *.css *.json
+
+# Include example scripts
+recursive-include examples *.py
+
+# Include tests (for source distributions)
+recursive-include tests *.py
+
+# Exclude bytecode and cache
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude __pycache__
+global-exclude *.so
+global-exclude .DS_Store

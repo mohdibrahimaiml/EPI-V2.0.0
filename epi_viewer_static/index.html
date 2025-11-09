@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EPI Viewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; }
+        .chat-bubble { max-width: 80%; }
+        .step-card { transition: all 0.2s; }
+        .step-card:hover { transform: translateX(4px); }
+        pre { white-space: pre-wrap; word-wrap: break-word; }
+        .trust-badge { animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- EPI Data (injected at pack time) -->
+    <script id="epi-data" type="application/json">
+    {
+        "manifest": {},
+        "steps": []
+    }
+    </script>
+
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">EPI Viewer</h1>
+                        <p class="text-sm text-gray-500">Executable Package for AI Workflows</p>
+                    </div>
+                    <div id="trust-badge"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Sidebar: Manifest Summary -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-lg shadow p-6 sticky top-6">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-4">Manifest</h2>
+                        <div id="manifest-summary" class="space-y-3 text-sm"></div>
+                    </div>
+                </div>
+
+                <!-- Main: Timeline -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="border-b border-gray-200 px-6 py-4">
+                            <h2 class="text-lg font-semibold text-gray-900">Timeline</h2>
+                            <p class="text-sm text-gray-500 mt-1">Captured workflow steps</p>
+                        </div>
+                        <div id="timeline" class="divide-y divide-gray-200"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="mt-12 bg-white border-t border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+                <p class="text-center text-sm text-gray-500">
+                    EPI v1.0-keystone | <span class="font-mono">application/epi+zip</span>
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

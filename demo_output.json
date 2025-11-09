@@ -1,0 +1,8 @@
+{
+  "timestamp": "2025-10-29T15:39:30.820152",
+  "model": "gpt-4",
+  "prompt": "Explain quantum computing in simple terms",
+  "response": "Quantum computing uses quantum mechanics principles...",
+  "tokens_used": 150,
+  "cost": 0.003
+}
