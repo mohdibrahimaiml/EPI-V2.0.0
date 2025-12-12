@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EPI Recorder - Complete Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0e27;
+            color: #fff;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.5em;
+            opacity: 0.95;
+        }
+
+        .slideshow-container {
+            max-width: 1400px;
+            margin: 50px auto;
+            position: relative;
+            background: #16213e;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6);
+        }
+
+        .slide {
+            display: none;
+        }
+
+        .slide.active {
+            display: block;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .slide-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            min-height: 600px;
+        }
+
+        .slide-left {
+            background: #1a2332;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .slide-right {
+            background: #0d1520;
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 60px;
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .slide-title {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+
+        .slide-description {
+            font-size: 1.2em;
+            line-height: 1.8;
+            color: #b0b8c9;
+            margin-bottom: 30px;
+        }
+
+        .code-block {
+            background: #0a0e1a;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 1.1em;
+            color: #88c0d0;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        .code-block .comment {
+            color: #5e81ac;
+        }
+
+        .code-block .command {
+            color: #a3be8c;
+        }
+
+        .slide-image {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .feature-list {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .feature-list li {
+            padding: 12px 0;
+            padding-left: 35px;
+            position: relative;
+            font-size: 1.1em;
+            color: #b0b8c9;
+        }
+
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #a3be8c;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+
+        .navigation {
+            text-align: center;
+            padding: 40px;
+            background: #0d1520;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 45px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 0 15px;
+            transition: all 0.3s;
+            font-weight: 600;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.5);
+        }
+
+        .nav-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .slide-indicator {
+            text-align: center;
+            padding: 30px;
+            background: #0d1520;
+        }
+
+        .dot {
+            height: 18px;
+            width: 18px;
+            margin: 0 8px;
+            background-color: #2a3548;
+            border-radius: 50%;
+            display: inline-block;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .dot.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: scale(1.3);
+        }
+
+        .dot:hover {
+            background-color: #3d4a61;
+        }
+
+        .terminal-output {
+            background: #0a0e1a;
+            border-radius: 8px;
+            padding: 25px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95em;
+            color: #a3be8c;
+            white-space: pre-wrap;
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #2a3548;
+        }
+
+        .highlight {
+            color: #ebcb8b;
+            font-weight: bold;
+        }
+
+        .success {
+            color: #a3be8c;
+        }
+
+        .footer {
+            background: #0d1520;
+            padding: 40px;
+            text-align: center;
+            border-top: 1px solid #2a3548;
+        }
+
+        .footer p {
+            color: #6b7890;
+            font-size: 1.1em;
+        }
+
+        @media (max-width: 1024px) {
+            .slide-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>EPI Recorder</h1>
+        <p>Complete Demo: From Installation to Viewing</p>
+    </div>
+
+    <div class="slideshow-container">
+        <!-- Slide 1: Introduction -->
+        <div class="slide active">
+            <div class="slide-content">
+                <div class="slide-left">
+                    <div class="step-number">1</div>
+                    <h2 class="slide-title">Installation</h2>
+                    <p class="slide-description">
+                        Install EPI Recorder from PyPI in seconds. No complex setup required - just one simple command.
+                    </p>
+                    <div class="code-block">
+                        <span class="comment"># Install from PyPI</span>
+                        <span class="command">pip install epi-recorder</span>
+
+                        <span class="comment"># Verify installation</span>
+                        <span class="command">epi --version</span>
+                    </div>
+                    <ul class="feature-list">
+                        <li>Python 3.11+ required</li>
+                        <li>Works on Windows, macOS, Linux</li>
+                        <li>All dependencies auto-installed</li>
+                        <li>Ready to use immediately</li>
+                    </ul>
+                </div>
+                <div class="slide-right">
+                    <div class="terminal-output">$ pip install epi-recorder
+
+                        Collecting epi-recorder
+                        Downloading epi_recorder-2.0.0-py3-none-any.whl
+                        Installing collected packages: epi-recorder
+                        <span class="success">Successfully installed epi-recorder-2.0.0</span>
+
+                        $ epi --version
+                        <span class="highlight">EPI Recorder v2.0.0</span>
+                        Status: <span class="success">Ready</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Create Workflow -->
+        <div class="slide">
+            <div class="slide-content">
+                <div class="slide-left">
+                    <div class="step-number">2</div>
+                    <h2 class="slide-title">Create Your Workflow</h2>
+                    <p class="slide-description">
+                        Write your AI workflow as normal Python code. EPI captures everything automatically.
+                    </p>
+                    <div class="code-block">
+                        <span class="comment"># complete_demo_workflow.py</span>
+
+                        <span class="command">documents</span> = [
+                        {"title": "Climate Report", "text": "..."},
+                        {"title": "AI in Healthcare", "text": "..."}
+                        ]
+
+                        <span class="comment"># Process documents</span>
+                        summaries = []
+                        for doc in documents:
+                        summary = <span class="command">generate_summary</span>(doc)
+                        summaries.append(summary)
+
+                        <span class="comment"># Save results</span>
+                        save_json("summaries.json", summaries)
+                    </div>
+                    <ul class="feature-list">
+                        <li>No code changes needed</li>
+                        <li>Works with any Python script</li>
+                        <li>Automatic step detection</li>
+                    </ul>
+                </div>
+                <div class="slide-right">
+                    <div class="terminal-output">
+                        ================================================================================
+                        COMPLETE EPI RECORDER DEMONSTRATION
+                        From Installation to Viewing
+                        ================================================================================
+
+                        [WORKFLOW] AI Text Summarization Tool
+
+                        [STEP 1/5] Loading 3 documents...
+                        Loaded successfully!
+
+                        [STEP 2/5] Analyzing text content...
+                        Document 1: Climate Change Report
+                        -> 22 words compressed to 11 words (50.0% reduction)
+                        Document 2: AI in Healthcare
+                        -> 19 words compressed to 6 words (68.4% reduction)
+                        Document 3: Quantum Computing Breakthrough
+                        -> 21 words compressed to 9 words (57.1% reduction)
+
+                        [STEP 3/5] Generating insights...
+                        Total documents processed: 3
+                        Original: 62 words -> Summary: 26 words
+                        Average compression: 58.1%
+
+                        [STEP 4/5] Saving results...
+                        Saved: text_summaries.json
+                        Saved: summary_insights.json
+
+                        [STEP 5/5] Workflow complete!
+
+                        <span class="success">[SUCCESS] Text summarization workflow completed successfully!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Record with EPI -->
+        <div class="slide">
+            <div class="slide-content">
+                <div class="slide-left">
+                    <div class="step-number">3</div>
+                    <h2 class="slide-title">Record with EPI</h2>
+                    <p class="slide-description">
+                        Run your script with EPI to create a cryptographically signed recording of the entire execution.
+                    </p>
+                    <div class="code-block">
+                        <span class="command">epi run complete_demo_workflow.py</span> \
+                        --goal "Text summarization demo" \
+                        --notes "Investor presentation"
+
+                        <span class="comment"># Alternative: CLI recording</span>
+                        <span class="command">epi record --out demo.epi</span> -- \
+                        python workflow.py
+                    </div>
+                    <ul class="feature-list">
+                        <li>Captures all inputs/outputs</li>
+                        <li>Records execution environment</li>
+                        <li>Auto-redacts API keys & secrets</li>
+                        <li>Cryptographically signed (Ed25519)</li>
+                        <li>Creates single .epi file</li>
+                    </ul>
+                </div>
+                <div class="slide-right">
+                    <div class="terminal-output">Recording: complete_demo_workflow.py
+
+                        <span class="highlight">+-------------------------- [OK] Recording complete
+                            --------------------------+</span>
+                        | Saved: epi-recordings\complete_demo_workflow_20251206_122652.epi |
+                        | Size: 0.01 MB |
+                        | Duration: 18.434s |
+                        | <span class="success">Verified: OK (signed & verified)</span> |
+                        | Viewer: Opened in browser |
+                        <span
+                            class="highlight">+-----------------------------------------------------------------------------+</span>
+
+                        Recording contains:
+                        - 5 workflow steps
+                        - 2 output files
+                        - Complete execution trace
+                        - Environment snapshot
+                        - Cryptographic signature
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Verify -->
+        <div class="slide">
+            <div class="slide-content">
+                <div class="slide-left">
+                    <div class="step-number">4</div>
+                    <h2 class="slide-title">Verify Authenticity</h2>
+                    <p class="slide-description">
+                        Verify the recording's integrity and authenticity using cryptographic verification.
+                    </p>
+                    <div class="code-block">
+                        <span class="command">epi verify</span> complete_demo_workflow.epi
+
+                        <span class="comment"># Output shows three-level verification:</span>
+                        <span class="comment"># 1. Structural validation</span>
+                        <span class="comment"># 2. Integrity check (SHA-256)</span>
+                        <span class="comment"># 3. Signature verification (Ed25519)</span>
+                    </div>
+                    <ul class="feature-list">
+                        <li>Tamper-proof verification</li>
+                        <li>Cryptographic proof of authenticity</li>
+                        <li>Trust level: LOW/MEDIUM/HIGH</li>
+                        <li>Detects any modifications</li>
+                    </ul>
+                </div>
+                <div class="slide-right">
+                    <div class="terminal-output">$ epi verify complete_demo_workflow.epi
+
+
+                        <span class="highlight">+-------------- [OK] EPI Verification Report --------------+</span>
+                        | File: complete_demo_workflow.epi |
+                        | <span class="success">Trust Level: HIGH</span> |
+                        | Message: Cryptographically verified and integrity intact |
+                        | |
+                        | <span class="success">[OK] Integrity: Verified (4 files)</span> |
+                        | <span class="success">[OK] Signature: Valid (key: default)</span> |
+                        <span class="highlight">+----------------------------------------------------------+</span>
+
+                        Verification Details:
+                        ✓ ZIP structure valid
+                        ✓ Manifest schema valid
+                        ✓ All file hashes match (SHA-256)
+                        ✓ Ed25519 signature valid
+                        ✓ No tampering detected
+
+                        <span class="success">This recording is authentic and unmodified.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: View in Browser -->
+        <div class="slide">
+            <div class="slide-content">
+                <div class="slide-left">
+                    <div class="step-number">5</div>
+                    <h2 class="slide-title">View Interactive Timeline</h2>
+                    <p class="slide-description">
+                        Open the recording in a beautiful interactive HTML viewer. Explore every detail of the workflow.
+                    </p>
+                    <div class="code-block">
+                        <span class="command">epi view</span> complete_demo_workflow.epi
+
+                        <span class="comment"># Opens automatically in your default browser
+                            # Self-contained - no server needed
+                            # Zero code execution - pure data rendering</span>
+                    </div>
+                    <ul class="feature-list">
+                        <li>Interactive timeline view</li>
+                        <li>Step-by-step breakdown</li>
+                        <li>Artifact preview</li>
+                        <li>Metadata display</li>
+                        <li>Trust badges</li>
+                        <li>No installation required</li>
+                    </ul>
+                </div>
+                <div class="slide-right">
+                    <img src="file:///C:/Users/dell/.gemini/antigravity/brain/231f9cb3-d865-4215-a350-3911cd4dd6df/complete_viewer_initial_1765024108190.png"
+                        alt="EPI Viewer Interface" class="slide-image">
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Viewer Details -->
+        <div class="slide">
+            <div class="slide-content">
+                <div class="slide-left">
+                    <div class="step-number">6</div>
+                    <h2 class="slide-title">Complete Transparency</h2>
+                    <p class="slide-description">
+                        Every step, every file, every detail - all visible in the interactive viewer.
+                    </p>
+                    <ul class="feature-list">
+                        <li>Workflow metadata & goals</li>
+                        <li>Complete step timeline</li>
+                        <li>Execution duration & timing</li>
+                        <li>Captured files & artifacts</li>
+                        <li>Environment information</li>
+                        <li>Signature status</li>
+                        <li>Full audit trail</li>
+                    </ul>
+                    <p class="slide-description" style="margin-top: 30px;">
+                        <strong>Single .epi file contains everything:</strong><br>
+                        Share it via email, cloud storage, or version control. Anyone can verify and view it.
+                    </p>
+                </div>
+                <div class="slide-right">
+                    <img src="file:///C:/Users/dell/.gemini/antigravity/brain/231f9cb3-d865-4215-a350-3911cd4dd6df/complete_viewer_final_1765024196936.png"
+                        alt="EPI Viewer Timeline" class="slide-image">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="changeSlide(-1)">← Previous</button>
+        <button class="nav-btn" onclick="changeSlide(1)">Next →</button>
+    </div>
+
+    <div class="slide-indicator">
+        <span class="dot active" onclick="currentSlide(0)"></span>
+        <span class="dot" onclick="currentSlide(1)"></span>
+        <span class="dot" onclick="currentSlide(2)"></span>
+        <span class="dot" onclick="currentSlide(3)"></span>
+        <span class="dot" onclick="currentSlide(4)"></span>
+        <span class="dot" onclick="currentSlide(5)"></span>
+    </div>
+
+    <div class="footer">
+        <p>EPI Recorder v2.0.0 - Making AI workflows reproducible, verifiable, and auditable</p>
+        <p style="margin-top: 10px; font-size: 0.9em;">PyPI: pip install epi-recorder | GitHub: mohdibrahimaiml/EPI-V1.1
+        </p>
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+
+        function changeSlide(n) {
+            currentSlideIndex += n;
+            if (currentSlideIndex >= slides.length) currentSlideIndex = 0;
+            if (currentSlideIndex < 0) currentSlideIndex = slides.length - 1;
+            showSlide(currentSlideIndex);
+        }
+
+        function currentSlide(n) {
+            currentSlideIndex = n;
+            showSlide(currentSlideIndex);
+        }
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+            slides[n].classList.add('active');
+            dots[n].classList.add('active');
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+
+        // Auto-advance every 8 seconds (optional)
+        // setInterval(() => changeSlide(1), 8000);
+    </script>
+</body>
+
+</html>

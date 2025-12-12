@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>EPI Recorder - User Journey</title>
+    <style>
+        :root {
+            --colab-bg: #fff;
+            --colab-sidebar: #f8f9fa;
+            --colab-text: #3c4043;
+            --colab-cell-bg: #f8f9fa;
+            --colab-code: #202124;
+            --play-btn-hover: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', arial, sans-serif;
+            background: var(--colab-bg);
+            color: var(--colab-text);
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 60px;
+            background: var(--colab-sidebar);
+            border-right: 1px solid #dadce0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 15px;
+        }
+
+        .sidebar-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 24px;
+            fill: #5f6368;
+            cursor: pointer;
+        }
+
+        .sidebar-icon.logo {
+            fill: #e67c73;
+            /* Colab orangeish */
+            margin-bottom: 40px;
+        }
+
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 40px;
+        }
+
+        .header {
+            border-bottom: 1px solid #dadce0;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .notebook-title {
+            font-size: 18px;
+            color: #202124;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .badge {
+            background: #e8f0fe;
+            color: #1967d2;
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 15px;
+            padding: 10px 0;
+            border-bottom: 1px solid #dadce0;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #5f6368;
+        }
+
+        .toolbar-item {
+            cursor: pointer;
+        }
+
+        .toolbar-item:hover {
+            color: #202124;
+        }
+
+        /* Cells */
+        .cell {
+            margin-bottom: 24px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .cell-gutter {
+            width: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 4px;
+        }
+
+        .play-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 1px solid #dadce0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            background: #fff;
+        }
+
+        .play-btn:hover {
+            background: #f1f3f4;
+            box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3);
+        }
+
+        .play-icon {
+            width: 12px;
+            height: 12px;
+            fill: #202124;
+            margin-left: 2px;
+            /* Visual center adjustment */
+        }
+
+        .spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #5f6368;
+            border-radius: 50%;
+            width: 14px;
+            height: 14px;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .cell-content {
+            flex: 1;
+        }
+
+        .code-area {
+            background: #f8f9fa;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            padding: 10px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            color: #37474f;
+            position: relative;
+        }
+
+        .code-area:focus-within {
+            background: #fff;
+            box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3);
+            border-color: #dadce0;
+        }
+
+        .python-kw {
+            color: #000080;
+            font-weight: bold;
+        }
+
+        .python-str {
+            color: #a31515;
+        }
+
+        .python-comment {
+            color: #008000;
+        }
+
+        .output-area {
+            margin-top: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            display: none;
+            padding-left: 4px;
+        }
+
+        .stream-output {
+            color: #202124;
+        }
+
+        .success-output {
+            color: #0d652d;
+            display: none;
+        }
+
+        .error-output {
+            color: #d93025;
+        }
+
+        /* Mock Viewer iframe */
+        #viewer-frame {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #dadce0;
+            margin-top: 20px;
+            border-radius: 8px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <svg class="sidebar-icon logo" viewBox="0 0 24 24">
+            <path
+                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+        </svg> <!-- Placeholder logo -->
+        <svg class="sidebar-icon" viewBox="0 0 24 24">
+            <path d="M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z" />
+        </svg>
+        <svg class="sidebar-icon" viewBox="0 0 24 24">
+            <path
+                d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z" />
+        </svg>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <div class="notebook-title">
+                <span>User_Journey_Guide.ipynb</span>
+                <span class="badge">EPI Labs</span>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span class="badge" style="background:#e6f4ea; color:#137333;">Connected (Python 3)</span>
+                <div style="width:32px; height:32px; background:#efefef; border-radius:50%;"></div>
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <span class="toolbar-item">+ Code</span>
+            <span class="toolbar-item">+ Text</span>
+            <span class="toolbar-item">Copy to Drive</span>
+            <span class="toolbar-item">File</span>
+            <span class="toolbar-item">Edit</span>
+            <span class="toolbar-item">View</span>
+            <span class="toolbar-item">Insert</span>
+            <span class="toolbar-item">Runtime</span>
+            <span class="toolbar-item">Tools</span>
+            <span class="toolbar-item">Help</span>
+        </div>
+
+        <!-- Cell 1: Install -->
+        <div class="cell" id="cell-1">
+            <div class="cell-gutter">
+                <div class="play-btn" onclick="runCell(1)">
+                    <svg class="play-icon" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                    </svg>
+                </div>
+                <div class="spinner"></div>
+            </div>
+            <div class="cell-content">
+                <div class="code-area">
+                    <span class="python-comment"># 1. Installation: Install from PyPI</span><br>
+                    <span class="python-str">!</span>pip install epi-recorder<br>
+                </div>
+                <div class="output-area">
+                    <div class="stream-output">
+                        Collecting epi-recorder
+                        Downloading epi_recorder-0.1.0-py3-none-any.whl (12 kB)
+                        Installing collected packages: epi-recorder
+                        Successfully installed epi-recorder-0.1.0
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cell 2: Run Workflow -->
+        <div class="cell" id="cell-2">
+            <div class="cell-gutter">
+                <div class="play-btn" onclick="runCell(2)">
+                    <svg class="play-icon" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                    </svg>
+                </div>
+                <div class="spinner"></div>
+            </div>
+            <div class="cell-content">
+                <div class="code-area">
+                    <span class="python-comment"># 2. Preparation (The Code)</span><br>
+                    <span class="python-kw">from</span> epi_recorder <span class="python-kw">import</span> record<br>
+                    <span class="python-kw">import</span> time<br>
+                    <br>
+                    <span class="python-comment"># Option B (Pythonic Way): Wrap critical workflow</span><br>
+                    <span class="python-kw">with</span> record(<span class="python-str">"my_workflow.epi"</span>,
+                    goal=<span class="python-str">"Train v2 Model"</span>):<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="python-comment"># ... their proprietary AI code ...</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="python-kw">print</span>(<span class="python-str">"Training
+                        model v2..."</span>)<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;time.sleep(1)<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="python-kw">print</span>(<span class="python-str">"Model
+                        Accuracy: 98.5%"</span>)
+                </div>
+                <div class="output-area">
+                    <div class="stream-output">
+                        Training model v2...
+                        Model Accuracy: 98.5%
+                        [EPI] 📹 Recording saved to: my_workflow.epi
+                        [EPI] 🔐 Signed with Ed25519 key (Context: Local)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cell 3: Verify -->
+        <div class="cell" id="cell-3">
+            <div class="cell-gutter">
+                <div class="play-btn" onclick="runCell(3)">
+                    <svg class="play-icon" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                    </svg>
+                </div>
+                <div class="spinner"></div>
+            </div>
+            <div class="cell-content">
+                <div class="code-area">
+                    <span class="python-comment"># 4. Verification</span><br>
+                    <span class="python-str">!</span>epi verify my_workflow.epi
+                </div>
+                <div class="output-area">
+                    <div class="stream-output">
+                        +-------------- [OK] EPI Verification Report --------------+
+                        | File: my_workflow.epi |
+                        | Trust Level: HIGH |
+                        | Message: Cryptographically verified and integrity intact |
+                        +----------------------------------------------------------+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cell 4: View -->
+        <div class="cell" id="cell-4">
+            <div class="cell-gutter">
+                <div class="play-btn" onclick="runCell(4)">
+                    <svg class="play-icon" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                    </svg>
+                </div>
+                <div class="spinner"></div>
+            </div>
+            <div class="cell-content">
+                <div class="code-area">
+                    <span class="python-comment"># 5. Viewing</span><br>
+                    <span class="python-str">!</span>epi view my_workflow.epi --inline
+                </div>
+                <div class="output-area">
+                    <div class="stream-output">Opening viewer in inline mode...</div>
+                    <iframe id="viewer-frame" src="demo_player.html"></iframe>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function runCell(id) {
+            const cell = document.getElementById('cell-' + id);
+            const playBtn = cell.querySelector('.play-btn');
+            const spinner = cell.querySelector('.spinner');
+            const output = cell.querySelector('.output-area');
+            const frame = cell.querySelector('#viewer-frame');
+
+            // UI State: Running
+            playBtn.style.display = 'none';
+            spinner.style.display = 'block';
+            if (output) output.style.display = 'none';
+
+            // Simulate delay
+            const delay = 800 + Math.random() * 1000;
+
+            setTimeout(() => {
+                // UI State: Done
+                spinner.style.display = 'none';
+                playBtn.style.display = 'flex';
+                if (output) output.style.display = 'block';
+                if (frame) frame.style.display = 'block';
+
+                // Scroll to bottom if needed
+                // window.scrollTo(0, document.body.scrollHeight);
+            }, delay);
+        }
+    </script>
+</body>
+
+</html>

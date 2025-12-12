@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EPI Demo - Screenshot Walkthrough</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.9;
+        }
+
+        .slideshow-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            position: relative;
+            background: #16213e;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .slide {
+            display: none;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .slide.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .slide img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .slide-caption {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #ddd;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .navigation {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        .slide-indicator {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.1em;
+        }
+
+        .dot {
+            height: 15px;
+            width: 15px;
+            margin: 0 5px;
+            background-color: #555;
+            border-radius: 50%;
+            display: inline-block;
+            transition: background-color 0.3s;
+            cursor: pointer;
+        }
+
+        .dot.active {
+            background-color: #667eea;
+        }
+
+        .info-section {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 40px;
+            background: #16213e;
+            border-radius: 20px;
+        }
+
+        .info-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .info-section ul {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .info-section li {
+            padding: 15px;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid #667eea;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>EPI Recorder Demonstration</h1>
+        <p>Interactive Screenshot Walkthrough</p>
+    </div>
+
+    <div class="slideshow-container">
+        <div class="slide active">
+            <img src="file:///C:/Users/dell/.gemini/antigravity/brain/231f9cb3-d865-4215-a350-3911cd4dd6df/viewer_initial_1765021864876.png"
+                alt="EPI Viewer Initial State">
+            <div class="slide-caption">
+                <strong>Step 1: EPI Viewer Interface</strong><br>
+                The interactive viewer showing workflow metadata, goal ("Analyze customer reviews"), notes, and tags.
+            </div>
+        </div>
+
+        <div class="slide">
+            <img src="file:///C:/Users/dell/.gemini/antigravity/brain/231f9cb3-d865-4215-a350-3911cd4dd6df/viewer_steps_0_1_expanded_1765021899746.png"
+                alt="Timeline with Steps">
+            <div class="slide-caption">
+                <strong>Step 2: Workflow Timeline</strong><br>
+                Timeline showing all 5 workflow steps: session.start, data.loaded, sentiment.analyzed,
+                summary.generated, and artifacts.saved.
+            </div>
+        </div>
+
+        <div class="slide">
+            <img src="file:///C:/Users/dell/.gemini/antigravity/brain/231f9cb3-d865-4215-a350-3911cd4dd6df/viewer_bottom_files_1765021914463.png"
+                alt="Files and Manifest">
+            <div class="slide-caption">
+                <strong>Step 3: Captured Files</strong><br>
+                Manifest section showing 4 captured files including sentiment_results.json and sentiment_summary.json
+                artifacts.
+            </div>
+        </div>
+
+        <div class="slide">
+            <img src="file:///C:/Users/dell/.gemini/antigravity/brain/231f9cb3-d865-4215-a350-3911cd4dd6df/viewer_top_hover_unsigned_1765021937277.png"
+                alt="Trust Badge">
+            <div class="slide-caption">
+                <strong>Step 4: Trust Indicator</strong><br>
+                Top section showing the signature/trust badge and complete workflow metadata.
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="changeSlide(-1)">← Previous</button>
+        <button class="nav-btn" onclick="changeSlide(1)">Next →</button>
+    </div>
+
+    <div class="slide-indicator">
+        <span class="dot active" onclick="currentSlide(0)"></span>
+        <span class="dot" onclick="currentSlide(1)"></span>
+        <span class="dot" onclick="currentSlide(2)"></span>
+        <span class="dot" onclick="currentSlide(3)"></span>
+    </div>
+
+    <div class="info-section">
+        <h2>What This Demonstrates</h2>
+        <ul>
+            <li>Python API usage with context manager pattern</li>
+            <li>Automatic logging of 5 workflow steps</li>
+            <li>Capture of 2 JSON artifacts</li>
+            <li>Cryptographic signing (Ed25519)</li>
+            <li>Interactive HTML viewer with timeline</li>
+            <li>Complete workflow transparency and auditability</li>
+        </ul>
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+
+        function changeSlide(n) {
+            currentSlideIndex += n;
+            if (currentSlideIndex >= slides.length) currentSlideIndex = 0;
+            if (currentSlideIndex < 0) currentSlideIndex = slides.length - 1;
+            showSlide(currentSlideIndex);
+        }
+
+        function currentSlide(n) {
+            currentSlideIndex = n;
+            showSlide(currentSlideIndex);
+        }
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+            slides[n].classList.add('active');
+            dots[n].classList.add('active');
+        }
+
+        // Auto-advance every 5 seconds
+        setInterval(() => changeSlide(1), 5000);
+    </script>
+</body>
+
+</html>
