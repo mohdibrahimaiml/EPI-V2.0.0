@@ -71,14 +71,16 @@ class EPIContainer:
         viewer_static_dir = Path(__file__).parent.parent / "epi_viewer_static"
         template_path = viewer_static_dir / "index.html"
         app_js_path = viewer_static_dir / "app.js"
+        css_path = viewer_static_dir / "viewer_lite.css"
         
         if not template_path.exists():
             # Fallback: minimal viewer if template not found
             return EPIContainer._create_minimal_viewer(manifest)
         
-        # Read template
+        # Read template and assets
         template_html = template_path.read_text(encoding="utf-8")
         app_js = app_js_path.read_text(encoding="utf-8") if app_js_path.exists() else ""
+        css_styles = css_path.read_text(encoding="utf-8") if css_path.exists() else ""
         
         # Read steps from steps.jsonl
         steps = []
@@ -104,8 +106,14 @@ class EPIContainer:
             f'<script id="epi-data" type="application/json">{data_json}</script>'
         )
         
+        # Replaces Tailwind CDN with local CSS
+        html_with_css = html_with_data.replace(
+            '<script src="https://cdn.tailwindcss.com"></script>',
+            f'<style>{css_styles}</style>'
+        )
+        
         # Inline app.js
-        html_with_js = html_with_data.replace(
+        html_with_js = html_with_css.replace(
             '<script src="app.js"></script>',
             f'<script>{app_js}</script>'
         )

@@ -59,6 +59,21 @@ test_steps_*.epi
 test_recording_*.epi
 system_test_recording.epi
 
+# Acceptance Tests & Debugging
+Final_Acceptance_Test*
+Manual_User_Test*
+Wizard_Workspace/
+Debug_Step1/
+ULTIMATE_COMPREHENSIVE_TEST_v2.py
+debug_step1.py
+check_viewer.html
+extracted_viewer.html
+fix_unicode.py
+comprehensive_test_*.py
+COMPREHENSIVE_REAL_TEST.py
+torture_test.py
+epi-recordings/
+
 # Debug/temporary test scripts
 **/test_import.py
 **/test_script.py
@@ -69,5 +84,10 @@ system_test_recording.epi
 temp_epi_*/
 
 # OS
-.DS_Store
-Thumbs.db
+# More Test Garbage
+Torture Test*
+debug_demo.py
+epi_demo.py
+epi_hello.txt
+manual_test_script.py
+test_magic.py

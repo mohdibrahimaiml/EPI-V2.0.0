@@ -157,7 +157,7 @@ def _open_viewer(epi_file: Path) -> bool:
 
 @app.command()
 def run(
-    script: Path = typer.Argument(..., help="Python script to record"),
+    script: Optional[Path] = typer.Argument(None, help="Python script to record (Optional - Interactive if missing)"),
     no_verify: bool = typer.Option(False, "--no-verify", help="Skip verification"),
     no_open: bool = typer.Option(False, "--no-open", help="Don't open viewer automatically"),
     # New metadata options
@@ -170,14 +170,65 @@ def run(
     """
     Zero-config recording: record + verify + view.
     
-    Example:
+    Interactive:
+        epi run  (Selects script from list)
+        
+    Direct:
         epi run my_script.py
-        epi run script.py --goal "improve accuracy" --notes "test run" --metric accuracy=0.92 --metric latency=210 --approved-by "bob" --tag test --tag v1
     """
+    
+    # --- SMART UX 1: INTERACTIVE MODE ---
+    if script is None:
+        # Find Python files in current directory
+        py_files = list(Path.cwd().glob("*.py"))
+        # Only exclude specific setup files, not everything starting with epi_
+        py_files = [f for f in py_files if f.name not in ["setup.py", "epi_setup.py"]]
+        
+        if not py_files:
+            console.print("[yellow]No Python scripts found in this directory.[/yellow]")
+            console.print("Create one or specify path: epi run [path/to/script.py]")
+            raise typer.Exit(1)
+            
+        console.print("\n[bold cyan]Select a script to record:[/bold cyan]")
+        for idx, f in enumerate(py_files, 1):
+            console.print(f"  [green]{idx}.[/green] {f.name}")
+            
+        from rich.prompt import Prompt
+        choice = Prompt.ask("\nNumber", default="1")
+        
+        try:
+            choice_idx = int(choice) - 1
+            if 0 <= choice_idx < len(py_files):
+                script = py_files[choice_idx]
+            else:
+                 console.print("[red]Invalid selection.[/red]")
+                 raise typer.Exit(1)
+        except ValueError:
+             console.print("[red]Invalid input.[/red]")
+             raise typer.Exit(1)
+             
+        console.print(f"[dim]Selected:[/dim] {script.name}\n")
+
+    # --- SMART UX 2: TYPO FIXER ---
     # Validate script exists
     if not script.exists():
-        console.print(f"[red][FAIL] Error:[/red] Script not found: {script}")
-        raise typer.Exit(1)
+        # Check for typos (simple close match)
+        import difflib
+        candidates = list(Path.cwd().glob("*.py"))
+        candidate_names = [c.name for c in candidates]
+        matches = difflib.get_close_matches(script.name, candidate_names, n=1, cutoff=0.6)
+        
+        if matches:
+            from rich.prompt import Confirm
+            suggestion = matches[0]
+            if Confirm.ask(f"[yellow]Script '{script}' not found. Did you mean '{suggestion}'?[/yellow]"):
+                script = Path(suggestion)
+            else:
+                console.print(f"[red][FAIL] Error:[/red] Script not found: {script}")
+                raise typer.Exit(1)
+        else:
+            console.print(f"[red][FAIL] Error:[/red] Script not found: {script}")
+            raise typer.Exit(1)
     
     # Parse metrics if provided
     metrics_dict = None
@@ -217,12 +268,25 @@ def run(
     
     console.print(f"[dim]Recording:[/dim] {script.name}")
     
+    # --- AUTO-FIX 1: KEYS ---
+    # Ensure default keys exist so it's never "Unsigned"
+    from epi_cli.keys import generate_default_keypair_if_missing
+    generated = generate_default_keypair_if_missing(console_output=False)
+    if generated:
+         console.print("[green]Created your secure cryptographic identity (keys/default)[/green]")
+    # -----------------------
+    
     import subprocess
     
     start = time.time()
-    with open(stdout_log, "wb") as out_f, open(stderr_log, "wb") as err_f:
-        proc = subprocess.Popen(cmd, env=child_env, stdout=out_f, stderr=err_f)
-        rc = proc.wait()
+    try:
+        with open(stdout_log, "wb") as out_f, open(stderr_log, "wb") as err_f:
+            proc = subprocess.Popen(cmd, env=child_env, stdout=out_f, stderr=err_f)
+            rc = proc.wait()
+    except Exception as e:
+        console.print(f"\n[bold red][FAIL] Could not execute command:[/bold red] {cmd[0]}")
+        console.print(f"[dim]Error detail: {e}[/dim]")
+        raise typer.Exit(1)
     duration = round(time.time() - start, 3)
     
     # Build manifest with metadata
@@ -237,6 +301,21 @@ def run(
     
     # Package into .epi
     EPIContainer.pack(temp_workspace, manifest, out)
+    
+    # --- AUTO-FIX 2: EMPTY CHECK ---
+    # Check if we actually recorded anything
+    import json
+    timeline_path = temp_workspace / "timeline.json"
+    if timeline_path.exists():
+        try:
+            with open(timeline_path) as f:
+                timeline_data = json.load(f)
+            if not timeline_data:
+                console.print("\n[bold yellow][!] Warning: Your script ran but didn't record any steps![/bold yellow]")
+                console.print("[dim]Did you forget to print anything? Try adding: print('Hello EPI')[/dim]\n")
+        except:
+            pass
+    # -----------------------------
     
     # Auto-sign
     signed = False

@@ -1,20 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EPI Viewer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: system-ui, -apple-system, sans-serif; }
-        .chat-bubble { max-width: 80%; }
-        .step-card { transition: all 0.2s; }
-        .step-card:hover { transform: translateX(4px); }
-        pre { white-space: pre-wrap; word-wrap: break-word; }
-        .trust-badge { animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        .chat-bubble {
+            max-width: 80%;
+        }
+
+        .step-card {
+            transition: all 0.2s;
+        }
+
+        .step-card:hover {
+            transform: translateX(4px);
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .trust-badge {
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
     </style>
 </head>
+
 <body class="bg-gray-50">
     <!-- EPI Data (injected at pack time) -->
     <script id="epi-data" type="application/json">
@@ -65,13 +94,12 @@
         <!-- Footer -->
         <footer class="mt-12 bg-white border-t border-gray-200">
             <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-                <p class="text-center text-sm text-gray-500">
-                    EPI v1.0-keystone | <span class="font-mono">application/epi+zip</span>
-                </p>
+                EPI v2.1.0 | <span class="font-mono">application/epi+zip</span>
             </div>
         </footer>
     </div>
 
     <script src="app.js"></script>
 </body>
+
 </html>

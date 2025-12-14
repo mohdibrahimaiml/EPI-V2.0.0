@@ -161,6 +161,115 @@ def keys(
         raise typer.Exit(1)
 
 
+@app.command()
+def init(
+    demo_filename: str = typer.Option("epi_demo.py", "--name", "-n", help="Name of the demo script"),
+    no_open: bool = typer.Option(False, "--no-open", help="Don't open viewer automatically (for testing)")
+):
+    """
+    [Wizard] First-time setup wizard! Creates keys, demo script, and runs it.
+    """
+    console.print("\n[bold magenta]EPI Setup Wizard[/bold magenta]\n")
+
+    # 1. Keys
+    from epi_cli.keys import generate_default_keypair_if_missing
+    console.print("1. [dim]Checking security keys...[/dim]", end=" ")
+    if generate_default_keypair_if_missing(console_output=False):
+         console.print("[green]Created![/green]")
+    else:
+         console.print("[green]Found! [OK][/green]")
+
+    # 2. Demo Script
+    console.print(f"2. [dim]Creating demo script '{demo_filename}'...[/dim]", end=" ")
+    script_content = '''# Welcome to EPI!
+
+import time
+
+print("="*40)
+print("   Hello from your first EPI recording!")
+print("="*40)
+
+print("\\n1. Doing some math...")
+result = 123 * 456
+print(f"   123 * 456 = {result}")
+
+print("\\n2. Creating a file...")
+with open("epi_hello.txt", "w") as f:
+    f.write(f"Calculation result: {result}")
+print("   Saved 'epi_hello.txt'")
+
+print("\\n3. Finishing up...")
+time.sleep(0.5)
+print("[OK] Done! Now check the browser!")
+'''
+    import os
+    if not os.path.exists(demo_filename):
+         with open(demo_filename, "w") as f:
+             f.write(script_content)
+         console.print("[green]Created![/green]")
+    else:
+         console.print("[yellow]Exists (Skipped) >>[/yellow]")
+
+    # 3. Running
+    console.print("\n3. [bold cyan]Running the demo now...[/bold cyan]\n")
+    
+    # Call run command programmatically
+    # We use subprocess to keep it clean separate process
+    import subprocess
+    import sys
+    cmd = [sys.executable, "-m", "epi_cli.main", "run", demo_filename]
+    if no_open:
+        cmd.append("--no-open")
+    subprocess.run(cmd)
+
+    console.print("\n[bold green]You are all set![/bold green]")
+    console.print(f"[dim]Next time just run:[/dim] epi run {demo_filename}")
+
+
+@app.command()
+def doctor():
+    """
+    [Doctor] Self-healing doctor. Fixes common issues silently.
+    """
+    console.print("\n[bold blue]EPI Doctor[/bold blue]\n")
+    
+    issues = 0
+    
+    # Check 1: Keys
+    console.print("1. Security Keys: ", end="")
+    from epi_cli.keys import generate_default_keypair_if_missing
+    if generate_default_keypair_if_missing(console_output=False):
+        console.print("[green]FIXED (Generated)[/green]")
+        issues += 1
+    else:
+        console.print("[green]OK[/green]")
+        
+    # Check 2: Command on PATH
+    console.print("2. 'epi' command: ", end="")
+    import shutil
+    if shutil.which("epi"):
+        console.print("[green]OK[/green]")
+    else:
+        console.print("[red]MISSING[/red]")
+        console.print("   [yellow]Run: python epi_setup.py[/yellow]")
+        issues += 1
+
+    # Check 3: Browser
+    console.print("3. Browser Check: ", end="")
+    try:
+        import webbrowser
+        webbrowser.get()
+        console.print("[green]OK[/green]")
+    except:
+        console.print("[yellow]WARNING (Headless?)[/yellow]")
+        
+    print()
+    if issues == 0:
+        console.print("[bold green][OK] System Healthy![/bold green]")
+    else:
+        console.print(f"[bold yellow][!] Found {issues} issues.[/bold yellow]")
+
+
 # Entry point for CLI
 def cli_main():
     """CLI entry point (called by `epi` command)."""

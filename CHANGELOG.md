@@ -5,6 +5,20 @@ All notable changes to the EPI Recorder project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2025-12-14
+
+### Usability (The "Foolproof" Update)
+- **New `epi init` command**: A wizard that sets up keys, creates a demo script, and verifies the environment automatically.
+- **New `epi doctor` command**: Self-diagnosis tool to check Python environment, keys, browser, and system paths.
+- **Auto-Keys**: `epi run` now silently auto-generates keys if they are missing (no more "Unsigned" errors).
+- **Empty Script Detection**: `epi run` warns if a script executed but recorded zero steps.
+- **Windows Reliability**: Fixed Unicode/Emoji crashes on Windows terminals and path handling issues.
+- **Smart UX**: Fixed interactive file picker to verify user inputs and properly list new scripts.
+- **Path Fixer**: Included `epi_setup.py` to fix "command not recognized" errors on Windows.
+
+## [2.0.0] - 2025-12-07
+- Major release with full CLI and verification system.
+
 ## [1.1.0] - 2025-11-23
 
 ### Added

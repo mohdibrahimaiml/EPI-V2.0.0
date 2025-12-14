@@ -84,7 +84,7 @@ def verify(
             else:
                 console.print(f"  [red][FAIL][/red] {len(mismatches)} file(s) failed verification")
                 for filename, reason in mismatches.items():
-                    console.print(f"    [red]•[/red] {filename}: {reason}")
+                    console.print(f"    [red]-[/red] {filename}: {reason}")
         
         # ========== STEP 3: AUTHENTICITY CHECKS ==========
         if verbose:
@@ -203,7 +203,7 @@ def print_trust_report(report: dict, epi_file: Path, verbose: bool = False):
         content_lines.append("")
         content_lines.append("[bold red]File Mismatches:[/bold red]")
         for filename, reason in report["mismatches"].items():
-            content_lines.append(f"  [red]•[/red] {filename}: {reason}")
+            content_lines.append(f"  [red]-[/red] {filename}: {reason}")
     
     content = "\n".join(content_lines)
     
