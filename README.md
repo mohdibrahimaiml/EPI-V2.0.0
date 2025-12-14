@@ -9,12 +9,19 @@
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.11+-ffe500.svg?style=flat-square&logo=python&logoColor=black)](https://www.python.org/downloads/)
-[![Status](https://img.shields.io/badge/status-Production_Ready-success.svg?style=flat-square)](https://pypi.org/project/epi-recorder/)
+[![Status](https://img.shields.io/badge/status-MVP-orange.svg?style=flat-square)](https://pypi.org/project/epi-recorder/)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mohdibrahimaiml/EPI-V2.1.0/blob/main/colab_demo.ipynb)
 
 <br/>
 
-[🎥 **Watch the Demo**](https://colab.research.google.com/github/mohdibrahimaiml/EPI-V2.1.0/blob/main/colab_demo.ipynb) &nbsp;•&nbsp; [📚 **Read the Docs**](docs/CLI.md) &nbsp;•&nbsp; [🐛 **Report Bug**](https://github.com/mohdibrahimaiml/EPI-V2.1.0/issues)
+[🎥 **Watch the Demo**](https://colab.research.google.com/github/mohdibrahimaiml/EPI-V2.1.0/blob/main/colab_demo.ipynb)
+
+> **See the Proof:** Watch how EPI transforms a standard Python script into an **immutable, cryptographically signed evidence package**.  
+> *It's not just a recording. It's the "PDF" for AI Evidence.*
+
+<br/>
+
+[📚 **Read the Docs**](docs/CLI.md) &nbsp;•&nbsp; [🐛 **Report Bug**](https://github.com/mohdibrahimaiml/EPI-V2.1.0/issues)
 
 </div>
 
@@ -64,31 +71,26 @@ epi view evidence.epi
 
 ---
 
-## ⚙️ The Architecture of Trust
+## 🧩 Architecture
 
-EPI unifies three powerful components into one standard format:
-
-### 📹 1. The Recorder
-A system-level flight recorder that captures truth at the source.
-*   **Intercepts**: Shell commands, Stdout/Stderr, Exit codes.
-*   **Caches**: Every LLM request is hashed and cached for deterministic replay.
-*   **Redacts**: Automatically scrubs API keys (`sk-...`) before saving.
-
-### 📦 2. The Container
-A portable, ZIP-based "Truth File" that runs everywhere.
-```text
-evidence.epi
-├── manifest.json        # 📝 Metadata + Ed25519 Signature
-├── steps.jsonl          # ⏱️ Micro-timeline of every event
-├── artifacts/           # 💾 Content-addressed files (SHA-256)
-├── cache/               # 🔄 Replay cache for deterministic runs
-└── viewer/              # 🖥️ Embedded HTML5 Viewer (Offline)
+```mermaid
+graph LR
+    User[User Script] -->|Intercepts| Recorder
+    Recorder -->|Writes| Evidence[.EPI File]
+    
+    subgraph "The .EPI Container"
+        Evidence --> Manifest[Manifest]
+        Evidence --> Timeline[Steps & Logs]
+        Evidence --> Artifacts[Files & Data]
+        Evidence --> Sig[Signature]
+    end
+    
+    Evidence -->|Reads| Verifier
+    Evidence -->|Renders| Viewer
+    
+    Verifier -->|Outputs| Report[Integrity Report]
+    Viewer -->|Displays| UI[Browser Interface]
 ```
-
-### 🛡️ 3. The Verifier
-Ensures the evidence is authentic and untampered.
-*   ✅ **Integrity**: Verifies SHA-256 hashes of the timeline.
-*   ✅ **Authenticity**: Validates the **Ed25519** signature against the author's key.
 
 ---
 
